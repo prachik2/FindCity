@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ElasticSearchPage</title>
+</head>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<body>
+    <div class="center-on-page">
+            <h1>Country</h1>
+            <div class="select">
+                <select id="country_id" name="country_select" class="selectpicker form-control">
+                    {% for country in context_dict.country %}
+                    <option value="{{ country.id }}">{{ country.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <h1>State</h1>
+            <div class="select">
+                <select id="state_id" name="state_select" class="selectpicker form-control">
+                </select>
+            </div>
+            <h1>City</h1>
+            <div class="select">
+                <select id="city_id" name="city_select" class="selectpicker form-control">
+                </select>
+            </div>
+            <div id="city_div">
+            </div>
+            <button  id="go_button_id" class="btn addCode">Go</button>
+    </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+
+   $(document).ready(function() {
+      var states_data = ''
+      var cities_data = ''
+       $.getJSON("https://raw.githubusercontent.com/praneshsaminathan/country-state-city/master/states.json",function(data){
+        states_data = data
+       });
+       $.getJSON("https://raw.githubusercontent.com/praneshsaminathan/country-state-city/master/cities.json",function(data1){
+        cities_data = data1
+       });
+
+   $('#country_id').on('change', function()
+    {
+
+        country_id = $("#country_id option:selected").val();
+        $('#state_id').find('option').remove()
+        for(state=0;state<states_data.states.length;state++)
+        {
+            if(country_id==states_data.states[state].country_id)
+            {
+                $('#state_id').append($("<option>").attr("value",states_data.states[state].id).text(states_data.states[state].name));
+
+            }
+        }
+
+    })
+     $('#state_id').on('change', function()
+    {
+        state_id = $("#state_id option:selected").val();
+        $('#city_id').find('option').remove()
+
+        for(city=0;city<cities_data.cities.length;city++)
+            {
+                if(state_id==cities_data.cities[city].state_id)
+                {
+                $('#city_id').append($("<option>").attr("value",cities_data.cities[city].name).text(cities_data.cities[city].name));
+                }
+            }
+        selected_city_id = $("#city_id option:selected").val();
+
+
+    })
+    $('.addCode').on('click',function(){
+    selected_city_id = $("#city_id option:selected").val();
+    document.getElementById("city_div").innerHTML +=
+      "<h3>You have Selected City:"+ selected_city_id +"</h3>";
+    })
+
+})
+</script>
+</body>
+</html>
